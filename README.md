@@ -90,8 +90,15 @@ The prefixes that will be used in this section are:
 `rdfs:subClassOf` | `allOf`| It should be defined as a model composition of the common property set and class-specific. Thus, a subclass should be defined as a [Schema Object](#schemaObject) in the [Component Object](#componentsObject) definition including the field `allOf`. In such field should also be defined a `type: object` and the corresponding [Reference Object](#referenceObject) (`$ref`:'reference to the Parent Class'). Finally, in the `properties` field should be defined the own subclass properties.|
 `owl:equivalentClass` | not covered |
 `owl:disjointWith` | not covered |
+`owl:AllDisjointClasses` | not covered |
 
-********TODO:*********** especificar qué cosas no estarían cubiertas por ejm la unión de dos intersecciones .
+********TODO:***********
+
+Note that complex representations are not supported by the mapping, for example:
+
+- Multiple inheritance, for example: ClassA `rdfs:subClassOf` (ClassB `owl:intersectionOf`  ClassC).
+- la unión de dos intersecciones .
+-
 
 
 **Class definition example**
@@ -173,12 +180,17 @@ OWL |OAS | Comments
 `rdfs:range` | `type`| **_a)_** when the range corresponds to an `owl:DatatypeProperty`: if the range is single-valued it should be defined according to its [data type](dataTypes); else the range should be defined compliant to its [data type](dataTypes) and the possible values defined as an enumeration (`enum`). **_b)_** when the range corresponds to an `owl:ObjectProperty`: if the range cardinality >=1 it should be defined as an `array` type and the `items` as a [Reference Object](#referenceObject) (`$ref:`'reference to the Range Class'); else if the range cardinality <1 it could be defined as an `array` type and `items` as a [Reference Object](#referenceObject) (`$ref:`'reference to the single Range Class') or only as an `object` type. This last decision will depend on the developer decision. |
 `owl:subPropertyOf` | not covered |
 `owl:equivalentProperty` | not covered |
+`owl:propertyDisjointWith` | not covered |
+`owl:AllDisjointProperties` | not covered |
 `owl:inverseOf` | not covered |
 **Property characteristics** |
 `owl:FunctionalProperty` | `maxItems`| ******** ACLARAR ******** It should be defined as the maximum number of items of the array which contains the objects, as follows: `maxItems:` 1. The array will be a `type: object` and contain a [Reference Object](#referenceObject) (`$ref:`'reference to the range Class').   |
 `owl:TransitiveProperty` | not covered |
 `owl:SymmetricProperty` | not covered |
 `owl:AsymmetricProperty` | not covered |
+`owl:InverseFunctionalProperty` | not covered |
+`owl:ReflexiveProperty` | not covered |
+`owl:IrreflexiveProperty` | not covered |
 
 **DatatypeProperty definition example**
 
@@ -319,10 +331,10 @@ components:
 `owl:onClass` | `Schema Object` | It should refers to the schema name where the restriction is applied.
 `owl:allValuesFrom` | | |
 `owl:someValuesFrom` | | |
-`owl:hasValue`| | |
-`owl:minCardinality` | `minItems` | It should be defined as the minimum number of items from the array which contains the objects.|
-`owl:maxCardinality` | `maxItems`| It should be defined as the maximum number of items from the array which contains the objects.|
-`owl:cardinality` | | |
+`owl:hasValue`| `type`  | **_a)_** when corresponds to a literal value of an `owl:DatatypeProperty`  **_b)_** when the range corresponds to an individual value of an `owl:ObjectProperty`  |
+`owl:minCardinality` | `minItems` | It should be defined as the minimum number of items from the array which contains the objects.  The value of `minItems` must be a non-negative number. |
+`owl:maxCardinality` | `maxItems`| It should be defined as the maximum number of items from the array which contains the objects. The value of `maxItems` must be a non-negative number.|
+`owl:cardinality` | `minItems` and `maxItems` | It should be defined with both keywords and the same value. The value of `minItems` and `maxItems` must be a non-negative number. |
 `owl:minQualifiedCardinality` | `minItems`| It should be defined as the minimum number of items from the array of `type: object` and a [Reference Object](#referenceObject) (`$ref:`'reference to the restricted Class'). |
 `owl:maxQualifiedCardinality` |`maxItems`| It should be defined as the maximum number of items from the array of `type: object` and a [Reference Object](#referenceObject) (`$ref:`'reference to the restricted Class'). |
 `owl:qualifiedCardinality`| | |
@@ -331,6 +343,7 @@ components:
 
 TTL
 ```ttl
+
 :Professor rdf:type owl:Class ;
   rdfs:subClassOf :Person ,
     [ rdf:type owl:Restriction ;
@@ -531,3 +544,11 @@ Finally, the following examples show the both previous operations for the Profes
  ------ | -------- | --------
  `owl:versionInfo` |  `version` | It should described with its value in the `version` field of [Info Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#infoObject).
  `owl:deprecated` |  `deprecated` | It should be applied in the [Schema Object](#schemaObject) `type`    
+`rdfs:label` |   |
+`rdfs:comment` |   |
+`rdfs:seeAlso` |   |
+`rdfs:isDefinedBy` |   |
+`owl:backwardCompatibleWith` |   |
+`owl:incompatibleWith` |   |
+`owl:priorVersion` |   |
+`owl:priorVersion` |   |
