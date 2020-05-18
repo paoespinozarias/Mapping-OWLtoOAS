@@ -12,7 +12,7 @@ Generate an OpenAPI Specification (OAS) from OWL.
 
 ## Introduction
 
-This is a document defining how to translate [OWL](https://www.w3.org/TR/owl2-overview/) to [OAS](https://github.com/OAI/OpenAPI-Specification) to allow developers to figure out how ontologies may be represented as an interface description for REST APIs. Here you will find the correspondences between both representations and simple examples of how an ontology code looks like in OAS.
+This is a document defining how to translate [OWL](https://www.w3.org/TR/owl2-overview/) to [OAS](https://github.com/OAI/OpenAPI-Specification) to allow developers to figure out how ontologies may be represented as an interface description for REST APIs. Here you will find the correspondences between both representations and simple examples of how an ontology code looks like in the OAS.
 
 
 
@@ -32,7 +32,7 @@ This is a document defining how to translate [OWL](https://www.w3.org/TR/owl2-ov
 
 ### <a name="definitions"></a>Definitions from OAS
 
-The following definitions have been taken from the [OAS version 3.0.3](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md) as a reduced version of all the details provided in such specification. Only those definitions that will be used in the mapping section are presented.
+The following definitions have been taken from the [OAS version 3.0.3](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md) as a reduced version of all the details provided in such specification. Only those definitions that will be used in the mapping section are briefly presented.
 
 It is worth nothing that the remaining definitions provided in OAS should be followed in the same manner as are shown in the specification.
 
@@ -70,7 +70,7 @@ Primitive [data types](https://github.com/OAI/OpenAPI-Specification/blob/master/
 
 ## <a name="mapping"></a>Mapping between OWL and OAS
 
-In this section the correspondences between the [OWL](https://www.w3.org/TR/owl2-quick-reference/) elements and OAS are provided. All maps include examples provided in [Turtle](https://www.w3.org/TR/turtle/) and YAML serializations for readability. The code of both serializations together with an ontology diagram are provided in [examples](examples). In addition, the documentation generated in the Swagger editor is available at [example documentation](ponerenlace).
+In this section the correspondences between [OWL](https://www.w3.org/TR/owl2-quick-reference/) and OAS are provided. All mappings include examples provided in [Turtle](https://www.w3.org/TR/turtle/) and [YAML](https://yaml.org/) serializations for human-friendly readability. The code of both serializations together with an ontology diagram are provided in [examples](examples). Also, the full example in YAML serialization may be opened in the [Swagger editor](http://editor.swagger.io) to check it as an API documentation.
 
 The prefixes that will be used in this section are:
 
@@ -81,10 +81,12 @@ The prefixes that will be used in this section are:
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
 ```
 
 #### <a name="class"></a>Class
-
 
 
 [`OWL`](#owl) | [`OAS`](#oas) | Comments
@@ -378,9 +380,9 @@ components:
 `owl:minCardinality` | `minItems` | It should be defined as the minimum number of the array items which contains as [Reference Object](#referenceObject) a scheme of the `owl:Thing` (`$ref:`'reference to the owl:Thing'). The value of `minItems` must be a non-negative number. |
 `owl:maxCardinality` | `maxItems`| It should be defined as the maximum number of the array items which contains as [Reference Object](#referenceObject) a scheme of the `owl:Thing` (`$ref:`'reference to the owl:Thing'). The value of `maxItems` must be a non-negative number.|
 `owl:cardinality` | `minItems` and `maxItems` | It should be defined as the same minimum and maximum number of the array items which contains as [Reference Object](#referenceObject) a scheme of the `owl:Thing` (`$ref:`'reference to the owl:Thing'). The value of `minItems` and `maxItems` must be a non-negative number. |
-`owl:minQualifiedCardinality` | `minItems`| It should be defined as the minimum number of array items which contains the [Reference Object](#referenceObject) to the restricted Class (`$ref:`'reference to the restricted Class'). The value of `minItems` must be a non-negative number.|
-`owl:maxQualifiedCardinality` |`maxItems`| It should be defined as the maximum number of array items which contains the  [Reference Object](#referenceObject) to the restricted Class (`$ref:`'reference to the restricted Class'). The value of `maxItems` must be a non-negative number.|
-`owl:qualifiedCardinality`|`minItems` and `maxItems` |  It should be defined as the same minimum and maximum number of the array items which contains the [Reference Object](#referenceObject) to the restricted Class (`$ref:`'reference to the restricted Class'). The value of `minItems` and `maxItems` must be a non-negative number. |
+`owl:minQualifiedCardinality` | `minItems`| It should be defined as the minimum number of array items and **_a)_** if it corresponds to an `owl:DatatypeProperty` the type of array items must be the restricted [data type](dataTypes); **_b)_** if it corresponds to an `owl:ObjectProperty` the type of array items must contain the [Reference Object](#referenceObject) to the restricted Class (`$ref:`'reference to the restricted Class'). The value of `minItems` must be a non-negative number.|
+`owl:maxQualifiedCardinality` |`maxItems`| It should be defined as the maximum number of array items and **_a)_** if it corresponds to an `owl:DatatypeProperty` the type of array items must be the restricted [data type](dataTypes); **_b)_** if it corresponds to an `owl:ObjectProperty` the type of array items must contain the [Reference Object](#referenceObject) to the restricted Class (`$ref:`'reference to the restricted Class'). The value of `maxItems` must be a non-negative number.|
+`owl:qualifiedCardinality`|`minItems` and `maxItems` |  It should be defined as the same minimum and maximum number of the array items which contains **_a)_** if it corresponds to an `owl:DatatypeProperty` the restricted [data type](dataTypes); **_b)_** if it corresponds to an `owl:ObjectProperty` the [Reference Object](#referenceObject) to the restricted Class (`$ref:`'reference to the restricted Class'). The value of `minItems` and `maxItems` must be a non-negative number. |
 
 **Restrictions example**
 
@@ -587,21 +589,36 @@ In the following, the mapping between the most common annotation properties desc
 
  [`OWL`](#owl) | [`OAS`](#oas) | Comments
  ------ | -------- | --------
+`dcterms:license` |   |
+`dcterms:creator` |   |
+`dcterms:contributor` |   |
+`dcterms:created` |   |
+`owl:priorVersion` |   |
+`van:preferredNamespaceUri`| |
+`owl:versionIRI` |   |
+`van:preferredNamespacePrefix`| |
 `dcterms:title` |`title`| It should described with its value in the `title` field of [Info Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#infoObject).
  `owl:versionInfo` |  `version` | It should described with its value in the `version` field of [Info Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#infoObject).
  `owl:deprecated` |  `deprecated` | It should be applied in the [Schema Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#schemaObject) `type`    
 `rdfs:label` | _name_  | It should be applied in the [Schema Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#schemaObject) as the name of the corresponding class or property. Note that _name_ is not an OAS keyword for the `Schema Object`, but it is provided as a way to make sense to such correspondence.
 `rdfs:comment`, `skos:definition`, `prov:definition` |  `description` | It should be applied in the [Schema Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#schemaObject) as a string description of the corresponding class or property. |
 `rdfs:seeAlso` |   |
+`sw:status`||
 `rdfs:isDefinedBy` |   |
 `owl:backwardCompatibleWith` |   |
 `owl:incompatibleWith` |   |
-`owl:priorVersion` |   |
-`owl:versionIRI` |   |
+`dcterms:modified`||
+`dcterms:issued`||
+`dcterms:source`||
+`dcterms:published`||
+`vaem:example`||
+
+
 
 #### <a name="limitations"></a>Limitations
 
 It is worth noting that complex representations are not supported by the mapping. In the following, some cases are listed:
 
 - Multiple inheritance, e.g. ClassA `rdfs:subClassOf` (ClassB `owl:intersectionOf` ClassC).
-- Complex range restrictions on a property such the union of two intersections, e.g. `owl:onProperty` ((ClassB `owl:intersectionOf` ClassC) `owl:unionOf` (ClassD `owl:intersectionOf` ClassE)).
+- Complex range restrictions on a property such as:
+  - The union of two intersections, e.g. ((ClassA `owl:intersectionOf` ClassB) `owl:unionOf` (ClassC `owl:intersectionOf` ClassD)).
