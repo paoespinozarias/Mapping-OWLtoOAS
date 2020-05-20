@@ -65,7 +65,7 @@ Alternatively, any time a Schema Object can be used, a [Reference Object](#refer
 
 #### <a name="dataTypes"></a>Data Types
 
-Primitive [data types](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#dataTypes) in the OAS are based on the types supported by the [JSON Schema Specification Wright Draft 00](https://tools.ietf.org/html/draft-wright-json-schema-00#section-4.2). In addition, primitives have an optional modifier property: `format`. OAS uses several known formats to define in fine detail the data type being used. However, to support documentation needs, the `format` property is an open `string`-valued property, and can have any value.
+Primitive [data types](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#dataTypes) in the OAS are based on the types supported by the [JSON Schema Specification Wright Draft 00](https://tools.ietf.org/html/draft-wright-json-schema-00#section-4.2). In addition, primitives have an optional modifier property: `format`. OAS uses several known formats to define in fine detail the data type being used. However, to support documentation needs, the `format` property is an open `string`-valued property, and can have any value. Formats such as "email", "uuid", and so on, MAY be used even though undefined by this specification. Types that are not accompanied by a format property follow the type definition in the JSON Schema. Tools that do not recognize a specific format MAY default back to the type alone, as if the format is not specified.
 
 
 ## <a name="mapping"></a>Mapping between OWL and OAS
@@ -91,19 +91,19 @@ The prefixes that will be used in this section are:
 
 [`OWL`](#owl) | [`OAS`](#oas) | Comments
 ------ | -------- | --------
-`owl:Class` | `Schema Object` | It should be defined as a [Schema Object](#schemaObject) in the [Component Object](#componentsObject) definition. The `Schema Object` must be a`type: object`. The schema name should be the `rdfs:label` value defined in the OWL Class. It is worth noting that such label should not contain blank spaces.
+`owl:Class` | `Schema Object` | It should be defined as a [Schema Object](#schemaObject) in the [Component Object](#componentsObject) definition. The `Schema Object` must be a`type: object`. The schema name should be the `rdfs:label` value defined in the OWL Class. It is worth noting that such label should not contain blank spaces. [See example](#classexample)
 **Class descriptions** |
 `owl:intersectionOf` | `allOf` | It should be defined as `allOf` which validates the value against all the subschemas.
 `owl:unionOf` | `anyOf` | It should be defined as `anyOf` which validates the value against any (one or more) the subschemas. |
 `owl:complementOf` | `not` | It should be defined as `not` which validates the value is not valid against the specified schema |
 `owl:oneOf` | `enum` | It should be defined as an `enum` and the values included in this enumeration list. |
 **Class axioms** |
-`rdfs:subClassOf` | `allOf`| It should be defined as a model composition of the common property set and class-specific. Thus, a subclass should be defined as a [Schema Object](#schemaObject) in the [Component Object](#componentsObject) definition including the field `allOf`. In such field should also be defined a `type: object` and the corresponding [Reference Object](#referenceObject) (`$ref`:'reference to the Parent Class'). Finally, in the `properties` field should be defined the own subclass properties.|
+`rdfs:subClassOf` | `allOf`| It should be defined as a model composition of the common property set and class-specific. Thus, a subclass should be defined as a [Schema Object](#schemaObject) in the [Component Object](#componentsObject) definition including the field `allOf`. In such field should also be defined a `type: object` and the corresponding [Reference Object](#referenceObject) (`$ref`:'reference to the Parent Class'). Finally, in the `properties` field should be defined the own subclass properties. [See example](#subclassexample)|
 `owl:equivalentClass` | not covered |
 `owl:disjointWith` | not covered |
 `owl:AllDisjointClasses` | not covered |
 
-**Class definition example**
+##### <a name="classexample"></a>Class definition example
 
 This example shows the definition of the Person class. However, its properties have been omitted because the details of the Data and Object properties definition will be provided in the next section.
 
@@ -119,8 +119,9 @@ components:
     Person:
       type: object
 ```
+[Back to the Class mapping](#class)
 
-**Subclass definition example**
+##### <a name="subclassexample"></a>Subclass definition example
 
 This example shows the definition of the Professor and Student subclasses. However, the specific properties of each subclass have been omitted because details on how to define Data and Object properties will be provided in the following sections.
 
@@ -151,9 +152,8 @@ components:
           allOf:
           - $ref: '#/components/schemas/Person'
           - type: object
-
-
 ```
+[Back to the Class mapping](#class)
 
 #### <a name="dataTypes"></a>Data Types
 
@@ -182,7 +182,7 @@ OWL |OAS | Comments
 **Property axioms** |
 `rdfs:domain` | `Schema Object`| It should be defined as a [Schema Object](#schemaObject) inside of the [Component Object](#componentsObject) definition. The `Schema Object` must be a `type: object` with a [Reference Object](#referenceObject) (`$ref:`'reference to the Domain Class') . |
 `rdfs:range` | `type`| **_a)_** when the range corresponds to an `owl:DatatypeProperty`: if the range is single-valued it should be defined according to its [data type](dataTypes); else the range should be defined compliant to its [data type](dataTypes) and the possible values defined as an enumeration (`enum`). **_b)_** when the range corresponds to an `owl:ObjectProperty`: if the range cardinality >=1 it should be defined as an `array` type and the `items` as a [Reference Object](#referenceObject) (`$ref:`'reference to the Range Class'); else if the range cardinality <1 it could be defined as an `array` type and `items` as a [Reference Object](#referenceObject) (`$ref:`'reference to the single Range Class') or only as an `object` type. This last decision will depend on the developer decision. |
-`owl:subPropertyOf` | not covered |
+`rdfs:subPropertyOf` | not covered |
 `owl:equivalentProperty` | not covered |
 `owl:propertyDisjointWith` | not covered |
 `owl:AllDisjointProperties` | not covered |
@@ -279,6 +279,7 @@ components:
           type: string
           nullable: true
 ```
+[Back to the Properties mapping](#properties)
 
 **ObjectProperty definition example**
 
@@ -366,7 +367,7 @@ components:
           maxItems: 1
           nullable: true
 ```
-
+[Back to the Properties mapping](#properties)
 
 #### <a name="restrictions"></a>Restrictions
 
@@ -374,15 +375,104 @@ components:
 ------ | -------- | --------
 `owl:onProperty` |  `properties` | It should refers to the property name where the restriction is applied.
 `owl:onClass` | `Schema Object` | It should refers to the schema name where the restriction is applied.
-`owl:allValuesFrom` | not covered | |
-`owl:someValuesFrom` | not covered | |
-`owl:hasValue`| `type`  | **_a)_** when corresponds to a literal value of an `owl:DatatypeProperty`  **_b)_** when the range corresponds to an individual value of an `owl:ObjectProperty` it should be represented as a [Reference Object](#referenceObject) to the individual URI value (`$ref:`'individual URI value'). |
+`owl:someValuesFrom`| `type`| The restricted property should be defined as an array (`type: array`) and specified as `required`.  In addition, the following details should be adopted: **_a)_** when the restriction corresponds to an `owl:DatatypeProperty`the items type should be defined according to the restricted [data type](dataTypes); **_b)_** when the restriction corresponds to an `owl:ObjectProperty` the `items` should be a [Reference Object](#referenceObject) to the restricted class (`$ref:`'reference to the restricted Class'). [See example](#someValuesFromExample) |  
+`owl:allValuesFrom` | `type` | The restricted property should be defined as an array (`type: array`) according to the following details: **_a)_** when the restriction corresponds to an `owl:DatatypeProperty` the items type should be defined according to the restricted data type; **_b)_** when the restriction corresponds to an `owl:ObjectProperty` the items should be a Reference Object to the restricted class (`$ref`:'reference to the restricted Class'). [See example](#allValuesFromExample)|
+`owl:hasValue`| `type` `default` | **_a)_** when corresponds to a literal value of an `owl:DatatypeProperty`  **_b)_** when the range corresponds to an individual value of an `owl:ObjectProperty` it should be represented as a [Reference Object](#referenceObject) to the individual URI value (`$ref:`'individual URI value'). [See example](#hasValueExample)|
+`owl:hasValue`| `default` | It should be defined as a default value of the property. Depending on the restriction  **_a)_** when it is on an `owl:DatatypeProperty` the property `type` should be defined as the corresponding [data type](dataTypes) and the default value should be the specific literal value, **_b)_** when it is on an `owl:ObjectProperty` the property type should be `type: string` with `format: uri` and the default value should be the individual URI value. |
 `owl:minCardinality` | `minItems` | It should be defined as the minimum number of the array items which contains as [Reference Object](#referenceObject) a scheme of the `owl:Thing` (`$ref:`'reference to the owl:Thing'). The value of `minItems` must be a non-negative number. |
 `owl:maxCardinality` | `maxItems`| It should be defined as the maximum number of the array items which contains as [Reference Object](#referenceObject) a scheme of the `owl:Thing` (`$ref:`'reference to the owl:Thing'). The value of `maxItems` must be a non-negative number.|
 `owl:cardinality` | `minItems` and `maxItems` | It should be defined as the same minimum and maximum number of the array items which contains as [Reference Object](#referenceObject) a scheme of the `owl:Thing` (`$ref:`'reference to the owl:Thing'). The value of `minItems` and `maxItems` must be a non-negative number. |
 `owl:minQualifiedCardinality` | `minItems`| It should be defined as the minimum number of array items and **_a)_** if it corresponds to an `owl:DatatypeProperty` the type of array items must be the restricted [data type](dataTypes); **_b)_** if it corresponds to an `owl:ObjectProperty` the type of array items must contain the [Reference Object](#referenceObject) to the restricted Class (`$ref:`'reference to the restricted Class'). The value of `minItems` must be a non-negative number.|
 `owl:maxQualifiedCardinality` |`maxItems`| It should be defined as the maximum number of array items and **_a)_** if it corresponds to an `owl:DatatypeProperty` the type of array items must be the restricted [data type](dataTypes); **_b)_** if it corresponds to an `owl:ObjectProperty` the type of array items must contain the [Reference Object](#referenceObject) to the restricted Class (`$ref:`'reference to the restricted Class'). The value of `maxItems` must be a non-negative number.|
 `owl:qualifiedCardinality`|`minItems` and `maxItems` |  It should be defined as the same minimum and maximum number of the array items which contains **_a)_** if it corresponds to an `owl:DatatypeProperty` the restricted [data type](dataTypes); **_b)_** if it corresponds to an `owl:ObjectProperty` the [Reference Object](#referenceObject) to the restricted Class (`$ref:`'reference to the restricted Class'). The value of `minItems` and `maxItems` must be a non-negative number. |
+
+##### <a name="restrictionsExamples"></a>Examples
+
+In the following, several examples for each restriction covered by the mapping are provided. Note that only properties affected by the restriction are shown. In some cases dots are included in the YAML example as an signal that some values are omitted e.g. Person: ....
+
+##### <a name="someValuesFromexample"></a>someValuesFrom example
+
+
+TTL
+```ttl
+:Professor rdf:type owl:Class ;
+  rdfs:subClassOf :Person ,
+    [ rdf:type owl:Restriction ;
+      owl:onProperty :teachesCourse ;
+      owl:someValuesFrom :Course
+    ] .
+```
+YAML
+```yaml
+components:
+  schemas:
+    Person: ...
+    Professor:
+      allOf:
+        - $ref: '#/components/schemas/Person'
+        - type: object
+      properties:
+        teachesCourse:
+          items:
+            $ref: '#/components/schemas/Course'
+          type: array
+      required:
+        - teachesCourse
+```
+[Back to the Restrictions mapping](#restrictions)
+
+##### <a name="allValuesFromExample"></a>allValuesFrom example
+TTL
+```ttl
+:Professor rdf:type owl:Class ;
+  rdfs:subClassOf :Person ,
+    [ rdf:type owl:Restriction ;
+      owl:onProperty :teachesTo ;
+      owl:allValuesFrom :Student
+    ] .
+```
+YAML
+```yaml
+components:
+  schemas:
+    Person: ...
+    Professor:
+      allOf:
+        - $ref: '#/components/schemas/Person'
+        - type: object
+      properties:
+        teachesTo:
+          items:
+            $ref: '#/components/schemas/Student'
+          type: array
+```
+[Back to the Restrictions mapping](#restrictions)
+
+##### <a name="hasValueExample"></a>hasValue example
+TTL
+```ttl
+:Student rdf:type owl:Class ;
+  rdfs:subClassOf :Student ,
+    [ rdf:type owl:Restriction ;
+      owl:onProperty :nationality ;
+      owl:hasValue "American"
+    ] .
+```
+YAML
+```yaml
+components:
+  schemas:
+    Student: ...
+    AmericanStudent:
+      allOf:
+        - $ref: '#/components/schemas/Student'
+        - type: object
+      properties:
+        nationality:
+          type: string
+          default: "American"
+```
+[Back to the Restrictions mapping](#restrictions)
 
 **Restrictions example**
 
@@ -393,7 +483,7 @@ TTL
   rdfs:subClassOf :Person ,
     [ rdf:type owl:Restriction ;
       owl:onProperty :teachesTo ;
-      owl:allValuesFrom :Student
+      owl:someValuesFrom :Student
     ] ,
     [ rdf:type owl:Restriction ;
       owl:onProperty :worksIn ;
@@ -439,15 +529,16 @@ components:
           items:
             $ref: '#/components/schemas/Student'
           type: array
-          nullable: true
         worksIn:
           items:
             $ref: '#/components/schemas/University'
           type: array
           maxItems: 1
           nullable: false
+      required:
+        - teachesTo
 ```
-
+[Back to the Restrictions mapping](#restrictions)
 
 #### <a name="pathsandoperations"></a>Paths and Operations
 
@@ -501,18 +592,11 @@ In the following some basic examples about `get` operations are provided. For si
 
 **Operation examples**
 
-This example shows the `get` operation retrieving all instances of a class.
+This example shows the `get` operation retrieving all instances of a class. Note that only the Response Object is included; however, other fields not presented in this example may be added such as described in the [Operation Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#operation-object) defintion.  
 
 ```YAML
 /classlabel:
   get:
-    parameters:
-      - description: Filter by resource label
-        in: path
-        name: label
-        required: true
-        schema:
-          type: string
     responses:
       '200'
       description: A message describing the result of the operation.
@@ -528,13 +612,6 @@ The next example shows the `get` operation retrieving an instance of a class by 
 ```YAML
 /classlabel/{id}:
   get:
-    parameters:
-      - description: Filter by resource id
-      in: path
-      name: id
-      required: true
-      schema:
-        type: string
     responses:
       '200'
       description: A message describing the result of the operation.
@@ -548,13 +625,6 @@ Finally, the following examples show the both previous operations for the Profes
 ```YAML
 /professors:
   get:
-    parameters:
-    - description: Filter by name
-      in: path
-      name: name
-      required: false
-      schema:
-        type: string
     responses:
       '200':
         description: The list of Professor has been retrieved successfully
@@ -567,13 +637,6 @@ Finally, the following examples show the both previous operations for the Profes
 
 /professors/{id}:
   get:
-    parameters:
-    - description: Filter by professor id
-      in: path
-      name: id
-      required: true
-      schema:
-        type: string
     responses:
       '200':
         description: The Professor has been retrieved successfully
@@ -589,26 +652,11 @@ In the following, the mapping between the most common annotation properties desc
 
  [`OWL`](#owl) | [`OAS`](#oas) | Comments
  ------ | -------- | --------
-`dcterms:license` |   |
-`dcterms:creator` |   |
-`dcterms:contributor` |   |
-`dcterms:created` |   |
-`owl:priorVersion` |   |
-`van:preferredNamespaceUri`| |
-`owl:versionIRI` |   |
-`van:preferredNamespacePrefix`| |
-`dcterms:title` |`title`| It should described with its value in the `title` field of [Info Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#infoObject).
- `owl:versionInfo` |  `version` | It should described with its value in the `version` field of [Info Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#infoObject).
- `owl:deprecated` |  `deprecated` | It should be applied in the [Schema Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#schemaObject) `type`    
+`dcterms:title` |`title`| It should described with its value in the `title` field of [Info Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#infoObject).   
 `rdfs:label` | _name_  | It should be applied in the [Schema Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#schemaObject) as the name of the corresponding class or property. Note that _name_ is not an OAS keyword for the `Schema Object`, but it is provided as a way to make sense to such correspondence.
-`rdfs:comment`, `skos:definition`, `prov:definition` |  `description` | It should be applied in the [Schema Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#schemaObject) as a string description of the corresponding class or property. |
+`rdfs:comment`, `dcterms:description`, `prov:definition` |  `description` | It should be applied in the [Schema Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#schemaObject) as a string description of the corresponding class or property. |
 `rdfs:seeAlso` |   |
-`sw:status`||
 `rdfs:isDefinedBy` |   |
-`owl:backwardCompatibleWith` |   |
-`owl:incompatibleWith` |   |
-`dcterms:modified`||
-`dcterms:issued`||
 `dcterms:source`||
 `dcterms:published`||
 `vaem:example`||
