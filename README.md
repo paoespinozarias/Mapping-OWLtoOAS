@@ -6,7 +6,7 @@ Generate an OpenAPI Specification (OAS) from OWL.
 
 **Versions:** 1.0.0
 
-**Release date:** 18/05/2020
+**Release date:** 20/05/2020
 
 **License:** [License (Apache-2.0)](https://github.com/paoespinozarias/Mapping-OWLtoOAS/blob/master/LICENSE)
 
@@ -70,7 +70,7 @@ Primitive [data types](https://github.com/OAI/OpenAPI-Specification/blob/master/
 
 ## <a name="mapping"></a>Mapping between OWL and OAS
 
-In this section the correspondences between [OWL](https://www.w3.org/TR/owl2-quick-reference/) and OAS are provided. All mappings include examples provided in [Turtle](https://www.w3.org/TR/turtle/) and [YAML](https://yaml.org/) serializations for human-friendly readability. The code of both serializations together with an ontology diagram are provided in [examples](examples). Also, the full example in YAML serialization may be opened in the [Swagger editor](http://editor.swagger.io) to check it as an API documentation.
+In this section the correspondences between OWL and OAS are provided. All mappings include examples provided in [Turtle](https://www.w3.org/TR/turtle/) and [YAML](https://yaml.org/) serializations for human-friendly readability. The code of both serializations together with an ontology diagram are provided in [examples](examples). Also, the full example in YAML serialization may be opened in the [Swagger editor](http://editor.swagger.io) to check it as an API documentation.
 
 The prefixes that will be used in this section are:
 
@@ -382,16 +382,15 @@ components:
 `owl:minCardinality` | `minItems` | It should be defined as the minimum number of the array items which contains as [Reference Object](#referenceObject) a scheme of the `owl:Thing` (`$ref:`'reference to the owl:Thing'). The value of `minItems` must be a non-negative number. |
 `owl:maxCardinality` | `maxItems`| It should be defined as the maximum number of the array items which contains as [Reference Object](#referenceObject) a scheme of the `owl:Thing` (`$ref:`'reference to the owl:Thing'). The value of `maxItems` must be a non-negative number.|
 `owl:cardinality` | `minItems` and `maxItems` | It should be defined as the same minimum and maximum number of the array items which contains as [Reference Object](#referenceObject) a scheme of the `owl:Thing` (`$ref:`'reference to the owl:Thing'). The value of `minItems` and `maxItems` must be a non-negative number. |
-`owl:minQualifiedCardinality` | `minItems`| It should be defined as the minimum number of array items and **_a)_** if it corresponds to an `owl:DatatypeProperty` the type of array items must be the restricted [data type](dataTypes); **_b)_** if it corresponds to an `owl:ObjectProperty` the type of array items must contain the [Reference Object](#referenceObject) to the restricted Class (`$ref:`'reference to the restricted Class'). The value of `minItems` must be a non-negative number.|
-`owl:maxQualifiedCardinality` |`maxItems`| It should be defined as the maximum number of array items and **_a)_** if it corresponds to an `owl:DatatypeProperty` the type of array items must be the restricted [data type](dataTypes); **_b)_** if it corresponds to an `owl:ObjectProperty` the type of array items must contain the [Reference Object](#referenceObject) to the restricted Class (`$ref:`'reference to the restricted Class'). The value of `maxItems` must be a non-negative number.|
-`owl:qualifiedCardinality`|`minItems` and `maxItems` |  It should be defined as the same minimum and maximum number of the array items which contains **_a)_** if it corresponds to an `owl:DatatypeProperty` the restricted [data type](dataTypes); **_b)_** if it corresponds to an `owl:ObjectProperty` the [Reference Object](#referenceObject) to the restricted Class (`$ref:`'reference to the restricted Class'). The value of `minItems` and `maxItems` must be a non-negative number. |
+`owl:minQualifiedCardinality` | `minItems`| It should be defined as the minimum number of array items and **_a)_** if it corresponds to an `owl:DatatypeProperty` the type of array items must be the restricted [data type](dataTypes); **_b)_** if it corresponds to an `owl:ObjectProperty` the type of array items must contain the [Reference Object](#referenceObject) to the restricted Class (`$ref:`'reference to the restricted Class'). The value of `minItems` must be a non-negative number. [See example](#minQualifiedCardinalityExample)|
+`owl:maxQualifiedCardinality` |`maxItems`| It should be defined as the maximum number of array items and **_a)_** if it corresponds to an `owl:DatatypeProperty` the type of array items must be the restricted [data type](dataTypes); **_b)_** if it corresponds to an `owl:ObjectProperty` the type of array items must contain the [Reference Object](#referenceObject) to the restricted Class (`$ref:`'reference to the restricted Class'). The value of `maxItems` must be a non-negative number. [See example](#maxQualifiedCardinalityExample)|
+`owl:qualifiedCardinality`|`minItems` and `maxItems` |  It should be defined as the same minimum and maximum number of the array items which contains **_a)_** if it corresponds to an `owl:DatatypeProperty` the restricted [data type](dataTypes); **_b)_** if it corresponds to an `owl:ObjectProperty` the [Reference Object](#referenceObject) to the restricted Class (`$ref:`'reference to the restricted Class'). The value of `minItems` and `maxItems` must be a non-negative number. [See example](#qualifiedCardinalityExample)|
 
 ##### <a name="restrictionsExamples"></a>Examples
 
 In the following, several examples for each restriction covered by the mapping are provided. Note that only properties affected by the restriction are shown. In some cases dots are included in the YAML example as an signal that some values are omitted e.g. Person: ....
 
 ##### <a name="someValuesFromexample"></a>someValuesFrom example
-
 
 TTL
 ```ttl
@@ -449,9 +448,10 @@ components:
 [Back to the Restrictions mapping](#restrictions)
 
 ##### <a name="hasValueExample"></a>hasValue example
+
 TTL
 ```ttl
-:Student rdf:type owl:Class ;
+:AmericanStudent rdf:type owl:Class ;
   rdfs:subClassOf :Student ,
     [ rdf:type owl:Restriction ;
       owl:onProperty :nationality ;
@@ -474,69 +474,96 @@ components:
 ```
 [Back to the Restrictions mapping](#restrictions)
 
-**Restrictions example**
+##### <a name="minQualifiedCardinalityExample"></a>minQualifiedCardinality example
 
 TTL
 ```ttl
 
-:Professor rdf:type owl:Class ;
+:Student rdf:type owl:Class ;
   rdfs:subClassOf :Person ,
     [ rdf:type owl:Restriction ;
-      owl:onProperty :teachesTo ;
-      owl:someValuesFrom :Student
-    ] ,
-    [ rdf:type owl:Restriction ;
-      owl:onProperty :worksIn ;
-      owl:allValuesFrom :University
-    ] ,
-    [ rdf:type owl:Restriction ;
-      owl:onProperty :worksIn ;
+      owl:onProperty :enrolledIn ;
       owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
-      owl:onClass :University
-    ] ;
-      owl:disjointWith :Student ;
-      rdfs:label "Professor"@en .
+      owl:onClass :Course
+    ]  .
 ```
 
 YAML
 ```yaml
 components:
   schemas:
-    Person:
-      type: object
+    Person: ...
+    Student:
+    allOf:
+    - $ref: '#/components/schemas/Person'
+    - type: object
       properties:
-        identifier:
-          items:
-            type: string
-            nullable: false
+        enrolledIn:
           type: array
-          maxItems: 1
-        gender:
-          type: string
-          enum:
-            - male
-            - female
-          nullable: true
-    Professor:
+          items:
+            $ref: '#/components/schemas/Course'
+          minItems: 1
+```
+[Back to the Restrictions mapping](#restrictions)
+
+##### <a name="maxQualifiedCardinalityExample"></a>maxQualifiedCardinality example
+
+TTL
+```ttl
+
+:Course rdf:type owl:Class ;
+  rdfs:subClassOf [ rdf:type owl:Restriction ;
+    [ rdf:type owl:Restriction ;
+      owl:onProperty :hasStudentEnrolled ;
+      owl:maxQualifiedCardinality "20"^^xsd:nonNegativeInteger ;
+      owl:onClass :Student
+    ] .
+```
+
+YAML
+```yaml
+components:
+  schemas:    
+    Course:
+      properties:
+        hasStudentEnrolled:
+          items:
+            $ref: '#/components/schemas/Student'
+          type: array
+          maxItems: 20
+```
+[Back to the Restrictions mapping](#restrictions)
+
+##### <a name="qualifiedCardinalityExample"></a>qualifiedCardinality example
+
+TTL
+```ttl
+
+:Student rdf:type owl:Class ;
+  rdfs:subClassOf :Person ,
+  [ rdf:type owl:Restriction ;
+    owl:onProperty :hasRecord ;
+    owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+    owl:onClass :StudentRecord
+  ]  .
+```
+
+YAML
+```yaml
+components:
+  schemas:
+    Person: ...
+    Student:
       allOf:
         - $ref: '#/components/schemas/Person'
         - type: object
       properties:
-        researchField:
-          type: string
-          nullable: true
-        teachesTo:
-          items:
-            $ref: '#/components/schemas/Student'
+        hasRecord:
           type: array
-        worksIn:
           items:
-            $ref: '#/components/schemas/University'
-          type: array
+            $ref: '#/components/schemas/StudentRecord'
+          minItems: 1
           maxItems: 1
-          nullable: false
-      required:
-        - teachesTo
 ```
 [Back to the Restrictions mapping](#restrictions)
 
