@@ -24,6 +24,7 @@ This is a document defining how to translate [OWL](https://www.w3.org/TR/owl2-ov
   - [Data Types](#dataTypes)
   - [Properties](#properties)
   - [Restrictions](#restrictions)
+  - [Boolean Combinations](#booleancombinations)
   - [Operations](#operations)
   - [Ontology Metadata](#ontologyMetadata)
   - [Limitations](#limitations)
@@ -92,11 +93,6 @@ The prefixes that will be used in this section are:
 [`OWL`](#owl) | [`OAS`](#oas) | Comments
 ------ | -------- | --------
 `owl:Class` | `Schema Object` | It should be defined as a [Schema Object](#schemaObject) in the [Component Object](#componentsObject) definition. The `Schema Object` must be a`type: object`. The schema name should be the `rdfs:label` value defined in the OWL Class. It is worth noting that such label should not contain blank spaces. [See example](#classexample)
-**Class descriptions** |
-`owl:intersectionOf` | `allOf` | It should be defined as `allOf` which validates the value against all the subschemas.
-`owl:unionOf` | `anyOf` | It should be defined as `anyOf` which validates the value against any (one or more) the subschemas. |
-`owl:complementOf` | `not` | It should be defined as `not` which validates the value is not valid against the specified schema |
-`owl:oneOf` | `enum` | It should be defined as an `enum` and the values included in this enumeration list. |
 **Class axioms** |
 `rdfs:subClassOf` | `allOf`| It should be defined as a model composition of the common property set and class-specific. Thus, a subclass should be defined as a [Schema Object](#schemaObject) in the [Component Object](#componentsObject) definition including the field `allOf`. In such field should also be defined a `type: object` and the corresponding [Reference Object](#referenceObject) (`$ref`:'reference to the Parent Class'). Finally, in the `properties` field should be defined the own subclass properties. [See example](#subclassexample)|
 `owl:equivalentClass` | not covered |
@@ -144,14 +140,14 @@ components:
   schemas:
     Person:
       type: object
-      Professor:
-          allOf:
-          - $ref: '#/components/schemas/Person'
-          - type: object
-      Student:
-          allOf:
-          - $ref: '#/components/schemas/Person'
-          - type: object
+    Professor:
+      allOf:
+      - $ref: '#/components/schemas/Person'
+      - type: object
+    Student:
+      allOf:
+      - $ref: '#/components/schemas/Person'
+      - type: object
 ```
 [Back to the Class mapping](#class)
 
@@ -304,7 +300,7 @@ components:
 
 ##### <a name="functionalPropertyExample"></a>FunctionalProperty examples
 
-This example shows how to define a Data Property of the Student class that is Functional.
+This example shows how to define a Functional Data Property of the Student class.
 
 TTL
 ```ttl
@@ -326,7 +322,7 @@ components:
           type: array
           maxItems: 1
 ```
-The next example shows how to define an Object Property of the Student class that is Functional.
+The next example shows how to define a Functional Object Property of the Student.
 
 TTL
 ```ttl
@@ -373,6 +369,8 @@ components:
 
 ##### <a name="someValuesFromexample"></a>someValuesFrom example
 
+This example shows how to represent that Professor teaches some Courses.
+
 TTL
 ```ttl
 :Professor rdf:type owl:Class ;
@@ -402,6 +400,9 @@ components:
 [Back to the Restrictions mapping](#restrictions)
 
 ##### <a name="allValuesFromExample"></a>allValuesFrom example
+
+This example shows how to represent that a Professor teaches to only Students.
+
 TTL
 ```ttl
 :Professor rdf:type owl:Class ;
@@ -429,6 +430,8 @@ components:
 [Back to the Restrictions mapping](#restrictions)
 
 ##### <a name="hasValueExample"></a>hasValue example
+
+This example presents how to represent that an American Student has an American nationality.
 
 TTL
 ```ttl
@@ -484,13 +487,15 @@ components:
 
 ##### <a name="minQualifiedCardinalityExample"></a>minQualifiedCardinality example
 
+This example shows how to represent that a Student should take minimum 1 Course.
+
 TTL
 ```ttl
 
 :Student rdf:type owl:Class ;
   rdfs:subClassOf :Person ,
     [ rdf:type owl:Restriction ;
-      owl:onProperty :enrolledIn ;
+      owl:onProperty :takesCourse ;
       owl:minQualifiedCardinality "1"^^xsd:nonNegativeInteger ;
       owl:onClass :Course
     ]  .
@@ -506,7 +511,7 @@ components:
     - $ref: '#/components/schemas/Person'
     - type: object
       properties:
-        enrolledIn:
+        takesCourse:
           type: array
           items:
             $ref: '#/components/schemas/Course'
@@ -515,6 +520,8 @@ components:
 [Back to the Restrictions mapping](#restrictions)
 
 ##### <a name="maxQualifiedCardinalityExample"></a>maxQualifiedCardinality example
+
+This example shows how to represent that a Course should have enrolled maximum 20 Students.
 
 TTL
 ```ttl
@@ -543,6 +550,8 @@ components:
 [Back to the Restrictions mapping](#restrictions)
 
 ##### <a name="qualifiedCardinalityExample"></a>qualifiedCardinality example
+
+This example shows that a Student has exactly 1 Student Record.
 
 TTL
 ```ttl
@@ -574,6 +583,110 @@ components:
           maxItems: 1
 ```
 [Back to the Restrictions mapping](#restrictions)
+
+#### <a name="booleancombinations"></a>Boolean combinations
+
+
+[`OWL`](#owl) | [`OAS`](#oas) | Comments
+------ | -------- | --------
+`owl:intersectionOf` | `allOf` | It should be defined as `allOf` which validates the value against all the subschemas. [See example](#intersectionOfExample)|
+`owl:unionOf` | `anyOf` | It should be defined as `anyOf` which validates the value against any (one or more) the subschemas. [See example](#unionOfExample) |
+`owl:complementOf` | `not` | It should be defined as `not` which validates the value is not valid against the specified schema [See example](#complementOfExample)|
+`owl:oneOf` | `enum` | It should be defined as an `enum` and the values included in this enumeration list. An  example of this was presented in the  |
+
+##### <a name="intersectionOfExample"></a>IntersectionOf example
+TTL
+```ttl
+:ProfessorInArtificalIntelligence rdf:type owl:Class ;
+  rdfs:subClassOf [ owl:intersectionOf ( :Professor
+    [ rdf:type owl:Restriction ;
+      owl:onProperty :belongsTo ;
+      owl:hasValue <https://w3id.org/example/Department/ArtificialIntelligenceDepartment> ]
+    ) ;
+    rdf:type owl:Class
+  ] .
+```
+YAML
+
+```yaml
+components:
+  schemas:
+    Professor: {...} #Rest of the schema omitted
+    ProfessorInArtificalIntelligence:
+      allOf:
+        - $ref: '#/components/schemas/Professor'
+      properties:
+        belongsTo:
+          type: string
+          format: uri
+          default: https://w3id.org/example/Department/ArtificialIntelligenceDepartment
+```
+
+[Back to the Boolean combinations mapping](#booleancombinations)
+
+##### <a name="unionOfExample"></a>UnionOf example
+
+This example shows how to represent that a Student will be enrolled in any of the Student Programs listed. Note that in this example is also represented the `owl:someValuesFrom` restriction on the enrrolledIn property.
+
+TTL
+```ttl
+:Student rdf:type owl:Class ;
+  rdfs:subClassOf :Person ,
+    [ rdf:type owl:Restriction ;
+      owl:onProperty :enrolledIn ;
+      owl:someValuesFrom [ rdf:type owl:Class ;
+        owl:unionOf ( :BachelorProgram
+          :MasterProgram
+          :PhDProgram
+        )
+      ]
+    ] .
+```
+YAML
+```yaml
+components:
+  schemas:
+    Person: {...} #Rest of the schema omitted
+    Student:
+      allOf:
+      - $ref: '#/components/schemas/Person'
+      - type: object
+      properties:
+        enrolledIn:
+          type: array
+          items:
+            type: object
+            anyOf:
+            - $ref: '#/components/schemas/MasterProgram'
+            - $ref: '#/components/schemas/PhDProgram'  
+            - $ref: '#/components/schemas/BachelorProgram'
+      required:
+        - enrolledIn
+```
+[Back to the Boolean combinations mapping](#booleancombinations)
+
+##### <a name="complementOfExample"></a>ComplementOf example
+TTL
+```ttl
+:ProfessorInOtherDepartment rdf:type owl:Class ;
+  rdfs:subClassOf
+    [ rdf:type owl:Class ;
+      owl:complementOf :ProfessorInArtificalIntelligence
+  ] ;
+```
+YAML
+```yaml
+components:
+  schemas:
+    ProfessorInArtificalIntelligence: {...} #Rest of the schema omitted
+    ProfessorInOtherDepartment:
+      not:
+        type: object
+        $ref: '#/components/schemas/ProfessorInArtificalIntelligence'
+```
+[Back to the Boolean combinations mapping](#booleancombinations)
+
+
 
 #### <a name="pathsandoperations"></a>Paths and Operations
 
@@ -695,10 +808,8 @@ In the following, the mapping between the most common annotation properties desc
  [`OWL`](#owl) | [`OAS`](#oas) | Comments
  ------ | -------- | --------
 `dcterms:title` |`title`| It should described with its value in the `title` field of [Info Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#infoObject).   
-`rdfs:label` | _name_  | It should be applied in the [Schema Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#schemaObject) as the name of the corresponding class or property. Note that _name_ is not an OAS keyword for the `Schema Object`, but it is provided as a way to make sense to such correspondence. In addition, the `rdfs:label` may be used in the [Operation Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#operation-object) as the value of the `tags` field. Tags can be used for logical grouping of operations by resources or any other qualifier. |
+`rdfs:label` |  `Schema Object`'s _name_  | It should be applied in the [Schema Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#schemaObject) as the name of the corresponding class or property. Note that  _name_ is not an OAS keyword for the `Schema Object`, but it is provided as a way to make sense to such correspondence. In addition, the `rdfs:label` may be used in the [Operation Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#operation-object) as the value of the `tags` field. Tags can be used for logical grouping of operations by resources or any other qualifier. |
 `rdfs:comment`, `dcterms:description`, `prov:definition` |  `description` | It should be applied in the [Schema Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#schemaObject) as a string description of the corresponding class or property. |
-`rdfs:seeAlso` |   |
-
 
 #### <a name="limitations"></a>Limitations
 
@@ -709,5 +820,4 @@ It is worth noting that complex representations are not supported by the mapping
   - subclass of the union between classes: ClassA `rdfs:subClassOf` (ClassB `owl:unionOf` ClassC), e.g. Parent is equivalent to the union of Mother and Father.
   - subclass of the intersection between a class and the negation of other class: ClassA `rdfs:subClassOf` (ClassB `owl:intersectionOf` (`owl:complementOf` ClassC)), e.g. Childless Person is a Person who is not a Parent.
 - Complex range restrictions on a property such as:
-  - The union of two intersections: (ClassA `owl:intersectionOf` ClassB) `owl:unionOf` (ClassC `owl:intersectionOf` ClassD), e.g.
-  -
+  - The union of two intersections: (ClassA `owl:intersectionOf` ClassB) `owl:unionOf` (ClassC `owl:intersectionOf` ClassD)
