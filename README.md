@@ -771,9 +771,9 @@ Each operation should deal with a response that contains the returned resources 
 
 OWL | OAS | Comments
 ---|:---:|---
-`owl:Class`  | `schema`  | It should be defined as part of the [Response Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#response-object) and as a [Reference Object](#referenceObject) of the [Schema Object](#schemaObject). In addition, if the operation is a POST or a PUT it must be included as part of the [Request Body Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#request-body-object) and as a [Reference Object](#referenceObject) of the [Schema Object](#schemaObject).
+`owl:Class`  | `schema`  | It should be defined as part of the [Response Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#response-object) and as a [Reference Object](#referenceObject) of the [Schema Object](#schemaObject). In addition, if the operation is a POST or PUT it must be included as part of the [Request Body Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#request-body-object) and as a [Reference Object](#referenceObject) of the [Schema Object](#schemaObject).
 
-Next, some basic examples about `get` and `post` operations are provided. For simplicity the response of the `200` HTTP status code is show together with the content defined as `application/json` media type. In OAS further details about all supported [HTTP codes](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#http-status-codes) and [Media Types](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#media-types) are provided.
+Next, some basic examples about `get` and `put` operations are provided. For simplicity the response of the `200` HTTP status code is show together with the content defined as `application/json` media type. In OAS further details about all supported [HTTP codes](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#http-status-codes) and [Media Types](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#media-types) are provided.
 
 **Operation examples**
 
@@ -812,7 +812,7 @@ The next example shows the `get` operation retrieving an instance of a class by 
           schema:
             $ref: ‘#/components/schemas/ClassLabel’
 ```
-In addition, the `post` operation to create a new instance of a class is presented.
+In addition, the `put` operation to create a new instance of a class is presented.
 
 ```YAML
 /classlabel:
