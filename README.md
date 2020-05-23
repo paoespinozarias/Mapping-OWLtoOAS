@@ -165,8 +165,10 @@ OWL |OAS | Comments
  `xsd:double`| `number` |The `format` must be defined as `double` |
  `xsd:string`|`string` |
  `xsd:date`|`string` | The `format` must be defined as `date` (As defined by `full-date` - [RFC3339](https://xml2rfc.ietf.org/public/rfc/html/rfc3339.html#anchor14))
+ `xsd:dateTime`|`string` | The `format` must be defined as `date-time` (As defined by `date-time` - [RFC3339](https://xml2rfc.ietf.org/public/rfc/html/rfc3339.html#anchor14))
  `xsd:dateTimeStamp`|`string` | The `format` must be defined as `date-time` (As defined by `date-time` - [RFC3339](https://xml2rfc.ietf.org/public/rfc/html/rfc3339.html#anchor14))
  `xsd:byte`|`string` | The `format` must be defined as `byte` (base64 encoded characters)
+ `xsd:anyURI`|`string` | The `format` must be defined as `uri`
   `xsd:boolean`|`boolean` |
 
 
@@ -602,13 +604,16 @@ In this section some complex combinations allowed in OWL are presented in the OA
 `owl:oneOf` | `enum` | It should be defined as an `enum` and the values included in this enumeration list. [See example](#complementOfExample) |
 
 ##### <a name="intersectionOfExample"></a>IntersectionOf example
+
+This example shows how to represent that a Professor in Artificial Intelligence must be a Professor and belongs to the Artificial Intelligence Department.
+
 TTL
 ```ttl
 :ProfessorInArtificalIntelligence rdf:type owl:Class ;
   rdfs:subClassOf [ owl:intersectionOf ( :Professor
     [ rdf:type owl:Restriction ;
       owl:onProperty :belongsTo ;
-      owl:hasValue <https://w3id.org/example/Department/ArtificialIntelligenceDepartment> ]
+      owl:hasValue <https://w3id.org/example/resource/Department/ArtificialIntelligenceDepartment> ]
     ) ;
     rdf:type owl:Class
   ] .
@@ -626,7 +631,7 @@ components:
         belongsTo:
           type: string
           format: uri
-          default: https://w3id.org/example/Department/ArtificialIntelligenceDepartment
+          default: https://w3id.org/example/resource/Department/ArtificialIntelligenceDepartment
 ```
 
 [Back to the Boolean combinations mapping](#booleancombinations)
@@ -673,6 +678,9 @@ components:
 [Back to the Boolean combinations mapping](#booleancombinations)
 
 ##### <a name="complementOfExample"></a>ComplementOf example
+
+This example shows how a Professor in Other Department is not a Professor In Artifical Intelligence.
+
 TTL
 ```ttl
 :ProfessorInOtherDepartment rdf:type owl:Class ;
@@ -694,6 +702,9 @@ components:
 [Back to the Boolean combinations mapping](#booleancombinations)
 
 ##### <a name="oneOfExample"></a>OneOf example
+
+This example shows how to represent the gender data property as a enumeration.
+
 TTL
 ```ttl
 :gender rdf:type owl:DatatypeProperty ;
@@ -872,13 +883,17 @@ Finally, the following examples show the aforementioned operations for the Profe
 
 #### <a name="ontologyMetadata"></a>Ontology metadata
 
-In the following, the mapping between the most common annotation properties describing OWL ontologies and OAS is presented.
+In this section the mapping between the most common annotation properties describing OWL ontologies and the OAS specification is presented.
 
  [`OWL`](#owl) | [`OAS`](#oas) | Comments
  ------ | -------- | --------
 `dcterms:title` |`title`| It should described with its value in the `title` field of [Info Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#infoObject).   
-`rdfs:label` |  `Schema Object`'s _name_  | It should be applied in the [Schema Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#schemaObject) as the name of the corresponding class or property. Note that  _name_ is not an OAS keyword for the `Schema Object`, but it is provided as a way to make sense to that similiarity. In addition, the `rdfs:label` may be used in the [Operation Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#operation-object) as the value of the `tags` field. Tags can be used for logical grouping of operations by resources or any other qualifier. |
-`rdfs:comment`, `dcterms:description`, `prov:definition` |  `description` | It should be applied in the [Schema Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#schemaObject) as a string description of the corresponding class or property. |
+`rdfs:label`, `skos:label` |  `Schema Object`'s _name_  | It should be applied in the [Schema Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#schemaObject) as the name of the corresponding class or property. Note that  _name_ is not an OAS keyword for the `Schema Object`, but it is provided as a way to make sense to that similiarity. In addition, the label may be used in the [Operation Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#operation-object) as the value of the `tags` field. Tags can be used for logical grouping of operations by resources or any other qualifier.|
+`rdfs:comment`, `dcterms:description`, `prov:definition`, `skos:definition` |  `description` | It should be applied in the [Schema Object](https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#schemaObject) as a string description of the corresponding class or property. |
+
+Note that due to the aforementioned annotation properties are usually included in several languages (e.g. `xml:lang="en"`)  it will be necessary to specify what language will be used in the OAS. This decision will depend on the developer.
+
+Finally, in those cases where the label annotations are not included in the ontology it will be necessary to adopt other naming strategy for the Schema Objects and Paths Items. The alternative strategy may be to take the term name from the ontology term path, e.g. http://w3id.org/example/def/#term_name. However, this strategy may not be useful when the ontology has opaque URIs because a human being looking at the schema or path can't figure out what’s on the other end. Thus, developers should name them is such a manner that conveys an understandable REST API’s resource model to its potential client developers instead of opaque design.
 
 #### <a name="limitations"></a>Limitations
 

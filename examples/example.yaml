@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  description: This is an example for the OWL to OAS Specification 
-  title: OWL to OAS Specification 
+  description: This is an example for the OWL to OAS Specification
+  title: OWL to OAS Specification
   version: v1.0
 paths:
   /professors:
@@ -212,7 +212,7 @@ paths:
       summary: Delete a Student
       tags:
       - Student
-  /american-students:  
+  /american-students:
     get:
       description: Gets a list of all American Students
       parameters:
@@ -233,7 +233,7 @@ paths:
           description: Successful response - returns an array of American Students.
       summary: List all American Students entities
       tags:
-      - American Student    
+      - American Student
     put:
       description: Create a new instance of American Student
       requestBody:
@@ -1362,14 +1362,14 @@ components:
         type: object
         properties:
           identifier:
-            items: 
+            items:
               type: string
             type: array
             maxItems: 1
           name:
             type: string
           birthdate:
-            items: 
+            items:
               type: string
               format: date
             type: array
@@ -1380,7 +1380,7 @@ components:
             type: string
           gender:
             type: string
-            enum: 
+            enum:
              - male
              - female
       Professor:
@@ -1433,14 +1433,14 @@ components:
               type: object
               anyOf:
                 - $ref: '#/components/schemas/MasterProgram'
-                - $ref: '#/components/schemas/PhDProgram'  
+                - $ref: '#/components/schemas/PhDProgram'
                 - $ref: '#/components/schemas/BachelorProgram'
-        required: 
+        required:
           - enrolledIn
       University:
         type: object
         properties:
-          universityName: 
+          universityName:
             type: string
           hasStudent:
             type: array
@@ -1458,7 +1458,7 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/Department'
-        required: 
+        required:
           - hasProfessor
           - hasStudent
           - hasStudyProgram
@@ -1477,7 +1477,7 @@ components:
             items:
               $ref: '#/components/schemas/Course'
             type: array
-        required:   
+        required:
           - hasCourse
       MasterProgram:
         allOf:
@@ -1494,7 +1494,7 @@ components:
       Course:
         type: object
         properties:
-          name: 
+          name:
             default: 'algo'
             type: string
           ects:
@@ -1512,7 +1512,7 @@ components:
             type: array
             minItems: 5
             maxItems: 20
-        required: 
+        required:
           - isTaughtBy
       StudentRecord:
         type: object
@@ -1530,7 +1530,7 @@ components:
           - $ref: '#/components/schemas/Student'
         properties:
           nationality:
-            default: "American" 
+            default: "American"
       Department:
         type: object
         properties:
@@ -1543,12 +1543,8 @@ components:
           belongsTo:
             type: string
             format: uri
-            default: https://w3id.org/example/Department/ArtificialIntelligenceDepartment 
+            default: https://w3id.org/example/resource/Department/ArtificialIntelligenceDepartment 
       ProfessorInOtherDepartment:
         not:
           type: object
-          $ref: '#/components/schemas/ProfessorInArtificialIntelligence'  
-
-      
-            
-
+          $ref: '#/components/schemas/ProfessorInArtificialIntelligence'
