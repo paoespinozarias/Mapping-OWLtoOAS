@@ -1,6 +1,8 @@
 # Mapping-OWLtoOAS
 
-Generate an OpenAPI Specification (OAS) from OWL.
+Generate an OpenAPI Specification (OAS) from OWL. 
+
+(IMPORTANT: This repository has been moved to [OWL-To-OAS-Specification](https://github.com/oeg-upm/OWL-To-OAS-Specification). Please, go to that repository to see the last version) 
 
 **Authors:** Paola Espinoza-Arias and Daniel Garijo
 
